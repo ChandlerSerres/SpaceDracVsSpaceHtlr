@@ -14,8 +14,8 @@ TagManager:
   - 
   - 
   - floor
-  - 
-  - 
+  - Enemies
+  - Player
   - 
   - 
   - 
@@ -40,4 +40,19 @@ TagManager:
   m_SortingLayers:
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: Player
+    uniqueID: 2146357215
+    locked: 0
+  - name: Hill
+    uniqueID: 3930660223
+    locked: 0
+  - name: Platforms
+    uniqueID: 4105721769
+    locked: 0
+  - name: Ground
+    uniqueID: 2310365643
+    locked: 0
+  - name: backGround
+    uniqueID: 2449063657
     locked: 0
