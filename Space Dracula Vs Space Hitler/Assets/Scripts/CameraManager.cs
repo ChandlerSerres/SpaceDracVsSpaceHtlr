@@ -25,24 +25,28 @@ public class CameraManager : MonoBehaviour
 
     private void LateUpdate()
     {
-        Vector2 follow = player.transform.position;
-        float xDifference = Vector2.Distance(Vector2.right * transform.position.x, Vector2.right * follow.x);
-        float yDifference = Vector2.Distance(Vector2.up * transform.position.y, Vector2.up * follow.y);
-
-        Vector3 newPosition = transform.position;
-        if(Mathf.Abs(xDifference) >= threshhold.x)
+        if (player.transform.position.x > -22 && player.transform.position.x < 107.5)
         {
-            newPosition.x = follow.x;
+
+            Vector2 follow = player.transform.position;
+            float xDifference = Vector2.Distance(Vector2.right * transform.position.x, Vector2.right * follow.x);
+            float yDifference = Vector2.Distance(Vector2.up * transform.position.y, Vector2.up * follow.y);
+
+            Vector3 newPosition = transform.position;
+            if (Mathf.Abs(xDifference) >= threshhold.x)
+            {
+                newPosition.x = follow.x;
+            }
+
+            if (Mathf.Abs(yDifference) >= threshhold.y)
+            {
+                newPosition.y = follow.y;
+            }
+
+            float moveSpeed = rb.velocity.magnitude > speed ? rb.velocity.magnitude : speed;
+
+            transform.position = Vector3.MoveTowards(transform.position, newPosition, moveSpeed * Time.deltaTime);
         }
-
-        if(Mathf.Abs(yDifference) >= threshhold.y)
-        {
-            newPosition.y = follow.y;
-        }
-
-        float moveSpeed = rb.velocity.magnitude > speed ? rb.velocity.magnitude : speed;
-
-        transform.position = Vector3.MoveTowards(transform.position,newPosition, moveSpeed * Time.deltaTime);
     }
 
     private Vector3 calculateThreshhold()

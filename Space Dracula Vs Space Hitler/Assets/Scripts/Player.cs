@@ -31,6 +31,7 @@ public class Player : MonoBehaviour
     {
         rigidBody = transform.GetComponent<Rigidbody2D>();
         collider = transform.GetComponent<BoxCollider2D>();
+        transform.localScale = new Vector3(0.2f, 0.2f, 0.2f);
     }
 
 
@@ -133,8 +134,8 @@ public class Player : MonoBehaviour
         float XInput = Input.GetAxis("Horizontal");
         float horizontalInput = Input.GetAxis("Horizontal") * speed * Time.deltaTime;
         float verticalInput = Input.GetAxis("Vertical") * speed * Time.deltaTime;
-        if(Input.GetAxis("Horizontal") > 0)transform.localScale = new Vector3(-1.0f, 1.0f, 1.0f);
-        if (Input.GetAxis("Horizontal") < 0) transform.localScale = new Vector3(1.0f, 1.0f, 1.0f);
+        if(Input.GetAxis("Horizontal") > 0)transform.localScale = new Vector3(0.2f, 0.2f, 0.2f);
+        if (Input.GetAxis("Horizontal") < 0) transform.localScale = new Vector3(-0.2f, 0.2f, 0.2f);
         if (fly == true)
         {
             transform.Translate(Vector2.up * verticalInput);
