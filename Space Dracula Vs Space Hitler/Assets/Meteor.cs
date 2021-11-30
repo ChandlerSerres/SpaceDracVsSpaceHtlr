@@ -4,14 +4,18 @@ using UnityEngine;
 
 public class Meteor : MonoBehaviour
 {
-    public Transform player;
+    Transform player;
     public float speed = 10f;
     private Vector2 playerPos;
 
     // Start is called before the first frame update
     void Start()
     {
-        playerPos = player.transform.position;
+        player = GameObject.FindGameObjectWithTag("Player").GetComponent<Transform>();
+        playerPos = new Vector2(player.transform.position.x,-2);
+        Vector3 dir = player.position - transform.position;
+        float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
+        transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
     }
 
     // Update is called once per frame
@@ -22,6 +26,12 @@ public class Meteor : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        Destroy(gameObject);
+        if(collision.collider.name == "Player" || collision.collider.name == "Ground")
+        {
+            Destroy(gameObject);
+        }
+        
     }
+
+    
 }
