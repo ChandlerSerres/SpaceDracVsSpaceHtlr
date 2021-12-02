@@ -20,8 +20,11 @@ public class Player : MonoBehaviour
     public LayerMask enemyLayers;
     public float attackRate = 2f;
     public HealthBar healthBar;
+    public GameObject knife;
+    public Transform kinfeSpawn;
 
-    float nextAttackTime = 0f;
+    float nextStabTime = 0f;
+    float nextThrowTime = 0f;
 
     private Rigidbody2D rigidBody;
     private BoxCollider2D collider;
@@ -100,7 +103,7 @@ public class Player : MonoBehaviour
 
     public void Attack()
     {
-        if (Time.time >= nextAttackTime)
+        if (Time.time >= nextStabTime)
         {
             if (Input.GetMouseButtonDown(0))
             {
@@ -108,7 +111,17 @@ public class Player : MonoBehaviour
 
 
                 
-                nextAttackTime = Time.time + 1.9f / attackRate;
+                nextStabTime = Time.time + 1.9f / attackRate;
+            }
+
+        }
+        if(Time.time >= nextThrowTime)
+        {
+            if (Input.GetMouseButtonUp(1))
+            {
+                Instantiate(knife, kinfeSpawn.transform.position, knife.transform.rotation);
+
+                nextThrowTime = Time.time + 1.9f / attackRate + 4;
             }
         }
     }
