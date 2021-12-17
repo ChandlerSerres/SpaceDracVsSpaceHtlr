@@ -12,7 +12,7 @@ public class Meteor : MonoBehaviour
     void Start()
     {
         player = GameObject.FindGameObjectWithTag("Player").GetComponent<Transform>();
-        playerPos = new Vector2(player.transform.position.x,-2);
+        playerPos = new Vector2(player.transform.position.x,-6);
         Vector3 dir = player.position - transform.position;
         float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
         transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
@@ -26,11 +26,12 @@ public class Meteor : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if(collision.collider.name == "Player" || collision.collider.name == "Ground")
+        if (collision.collider.name == "Player" || collision.collider.name == "Ground")
         {
             Destroy(gameObject);
+
         }
-        
+        Debug.Log("Meteor Collided with: " + collision.collider.name);
     }
 
     

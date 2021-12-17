@@ -10,10 +10,9 @@ public class Player : MonoBehaviour
 
     //Player movement speed
     [Range(0, 10)]
-    public float speed = 3;
+    public float speed = 5;
     public int jumpNum = 1;
-    public float jumpV = 5f;
-    public bool fly = false;
+    public float jumpV = 7f;
     public float stamina = 5;
     public Transform attackPoint;
     public float attackRange = 0.5f;
@@ -23,17 +22,24 @@ public class Player : MonoBehaviour
     public GameObject knife;
     public Transform kinfeSpawn;
 
+    public float dashDistance = 6f;
+    bool isDashing;
+    float doubleTapTime;
+    KeyCode lastKeyCode;
+
+    float horizontalInput;
+
     float nextStabTime = 0f;
     float nextThrowTime = 0f;
 
     private Rigidbody2D rigidBody;
-    private BoxCollider2D collider;
+    private PolygonCollider2D collider;
    
 
     private void Awake()
     {
         rigidBody = transform.GetComponent<Rigidbody2D>();
-        collider = transform.GetComponent<BoxCollider2D>();
+        collider = transform.GetComponent<PolygonCollider2D>();
         transform.localScale = new Vector3(0.2f, 0.2f, 0.2f);
     }
 
@@ -43,6 +49,7 @@ public class Player : MonoBehaviour
     void Start()
     {
         anim = GetComponent<Animator>();
+        doubleTapTime = Time.time;
     }
 
     // Update is called once per frame
@@ -51,7 +58,7 @@ public class Player : MonoBehaviour
 
         Movement();
 
-        if (IsGrounded() && Input.GetKeyDown(KeyCode.Space) && fly == false || Input.GetKeyDown(KeyCode.Space) && jumpNum <= 1 && fly == false)
+        if (IsGrounded() && Input.GetKeyDown(KeyCode.Space) && !isDashing|| Input.GetKeyDown(KeyCode.Space) && jumpNum <= 1 && !isDashing)
         {
             if (IsGrounded())
             {
@@ -68,30 +75,7 @@ public class Player : MonoBehaviour
 
         
 
-        if (Input.GetKeyUp(KeyCode.F) && fly == false && stamina >= 5)
-        {
-            fly = true;
-            rigidBody.gravityScale = 0;
-            rigidBody.velocity = Vector2.up * 0f;
-        }
-        else if(Input.GetKeyUp(KeyCode.F) && fly == true || stamina < 1)
-        {
-            fly = false;
-            rigidBody.gravityScale = 0.42f;
-        }
-
-        if(fly == true && stamina > 0)
-        {
-
-            DecreaseStam();
-     
-        }
-        else if(fly == false && stamina < 5)
-        {
-
-            RegenStamina();
-            
-        }
+       
         
     }
 
@@ -137,35 +121,87 @@ public class Player : MonoBehaviour
 
         foreach (Collider2D enemy in hitEnemies)
         {
-            Debug.Log("Hit " + enemy.name);
-            enemy.GetComponent<Enemy>().takeDamage(20);
+            if (enemy.tag == "Enemy")
+            {
+                Debug.Log("Hit " + enemy.name);
+                enemy.GetComponent<Enemy>().takeDamage(20);
+            }
+
         }
     }
 
+
     public void Movement()
     {
-        float XInput = Input.GetAxis("Horizontal");
-        float horizontalInput = Input.GetAxis("Horizontal") * speed * Time.deltaTime;
-        float verticalInput = Input.GetAxis("Vertical") * speed * Time.deltaTime;
-        if(Input.GetAxis("Horizontal") > 0)transform.localScale = new Vector3(0.2f, 0.2f, 0.2f);
-        if (Input.GetAxis("Horizontal") < 0) transform.localScale = new Vector3(-0.2f, 0.2f, 0.2f);
-        if (fly == true)
-        {
-            transform.Translate(Vector2.up * verticalInput);
 
+            float XInput = Input.GetAxis("Horizontal");
+            horizontalInput = Input.GetAxis("Horizontal");
+            float verticalInput = Input.GetAxis("Vertical") * speed * Time.deltaTime;
+            if (Input.GetAxis("Horizontal") > 0) transform.localScale = new Vector3(0.2f, 0.2f, 0.2f);   
+            if (Input.GetAxis("Horizontal") < 0) transform.localScale = new Vector3(-0.2f, 0.2f, 0.2f);
+            if (!isDashing)
+            {
+                //transform.Translate(Vector2.right * horizontalInput * speed *Time.deltaTime);
+                rigidBody.velocity = new Vector2(horizontalInput * speed, rigidBody.velocity.y);
         }
 
-        transform.Translate(Vector2.right * horizontalInput);
+
         if (Mathf.Abs(XInput) > 0)
-        {
-            anim.SetInteger("StateNum", 1);
-        }
-        else
-        {
-            anim.SetInteger("StateNum", 0);
-        }
+            {
+                anim.SetInteger("StateNum", 1);
+            }
+            else
+            {
+                anim.SetInteger("StateNum", 0);
+            }
 
 
+        //Dashing Left
+        if (Input.GetKeyDown(KeyCode.A))
+        {
+            if(doubleTapTime > Time.time && lastKeyCode == KeyCode.A)
+            {
+                StartCoroutine(Dash(-1f));
+            }
+            else
+            {
+                doubleTapTime = Time.time + .5f;
+                rigidBody.gravityScale = 5;
+            }
+
+            lastKeyCode = KeyCode.A;
+        }
+
+        //Dash Right
+        if (Input.GetKeyDown(KeyCode.D))
+        {
+            if (doubleTapTime > Time.time && lastKeyCode == KeyCode.D)
+            {
+                StartCoroutine(Dash(1f));
+                
+            }
+            else
+            {
+                doubleTapTime = Time.time + .5f;
+                rigidBody.gravityScale = 5;
+            }
+
+            lastKeyCode = KeyCode.D;
+        }
+
+    }
+
+    IEnumerator Dash (float direction)
+    {
+        isDashing = true;
+        rigidBody.velocity = new Vector2(rigidBody.velocity.x, 0f);
+        rigidBody.AddForce(new Vector2(dashDistance * direction, 0f), ForceMode2D.Impulse);
+        float gravity = rigidBody.gravityScale;
+        rigidBody.gravityScale = 0;
+        yield return new WaitForSeconds(0.2f);
+        rigidBody.gravityScale = gravity;
+        isDashing = false;
+        
     }
 
     private bool IsGrounded()
@@ -193,4 +229,9 @@ public class Player : MonoBehaviour
         Gizmos.DrawWireSphere(attackPoint.position, attackRange);
     }
 
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        Debug.Log(collision.collider.name);
+    }
 }

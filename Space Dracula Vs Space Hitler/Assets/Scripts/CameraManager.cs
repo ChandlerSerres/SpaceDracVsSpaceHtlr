@@ -6,7 +6,7 @@ public class CameraManager : MonoBehaviour
 {
     public GameObject player;
     public Vector2 followOffset;
-    public float speed = 3;
+    public float speed = 5.05f;
     private Vector2 threshhold;
     private Rigidbody2D rb;
 
@@ -25,7 +25,7 @@ public class CameraManager : MonoBehaviour
 
     private void LateUpdate()
     {
-        if (player.transform.position.x > -22 && player.transform.position.x < 107.5)
+        if (player.transform.position.x > 3.5 && player.transform.position.x < 132.75)
         {
 
             Vector2 follow = player.transform.position;
@@ -38,10 +38,9 @@ public class CameraManager : MonoBehaviour
                 newPosition.x = follow.x;
             }
 
-            if (Mathf.Abs(yDifference) >= threshhold.y)
-            {
-                newPosition.y = follow.y;
-            }
+
+           newPosition.y = follow.y + .7f;
+
 
             float moveSpeed = rb.velocity.magnitude > speed ? rb.velocity.magnitude : speed;
 
