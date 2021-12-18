@@ -21,7 +21,6 @@ public class Enemy : MonoBehaviour
     public float attackRate = 2f;
     float nextAttackTime = 0f;
     public LayerMask playerLayer;
-    float health = 100;
 
 
     // Start is called before the first frame update
@@ -73,20 +72,7 @@ public class Enemy : MonoBehaviour
         
     }
 
-    public void takeDamage(float damage)
-    {
-        if(health > 0)
-        {
-            health -= damage;
-        }
-        else
-        {
-            DestroyObject(gameObject);
-            Debug.Log("Dead");
-        }
-        
 
-    }
 
 
     private void OnTriggerEnter2D(Collider2D collision)

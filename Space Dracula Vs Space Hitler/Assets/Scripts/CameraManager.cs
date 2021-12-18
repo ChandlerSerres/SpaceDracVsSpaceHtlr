@@ -25,7 +25,7 @@ public class CameraManager : MonoBehaviour
 
     private void LateUpdate()
     {
-        if (player.transform.position.x > 3.5 && player.transform.position.x < 132.75)
+        if (player.transform.position.x > 10.35 && player.transform.position.x < 132.75)
         {
 
             Vector2 follow = player.transform.position;
@@ -39,7 +39,7 @@ public class CameraManager : MonoBehaviour
             }
 
 
-           newPosition.y = follow.y + .7f;
+           newPosition.y = follow.y + 2f;
 
 
             float moveSpeed = rb.velocity.magnitude > speed ? rb.velocity.magnitude : speed;

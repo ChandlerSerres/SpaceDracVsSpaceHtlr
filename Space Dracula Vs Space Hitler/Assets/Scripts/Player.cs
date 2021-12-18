@@ -124,7 +124,7 @@ public class Player : MonoBehaviour
             if (enemy.tag == "Enemy")
             {
                 Debug.Log("Hit " + enemy.name);
-                enemy.GetComponent<Enemy>().takeDamage(20);
+                enemy.GetComponent<EnemyHealth>().takeDamage(20);
             }
 
         }

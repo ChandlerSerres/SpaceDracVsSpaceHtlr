@@ -49,9 +49,10 @@ public class Knife : MonoBehaviour
         Debug.Log("Knife collided with " + collision.name);
         if (collision.tag == "Enemy")
         {
-            collision.GetComponent<Enemy>().takeDamage(20);
-            Debug.Log("Damage taken");
             returnedToPlayer = true;
+            collision.GetComponent<EnemyHealth>().takeDamage(20);
+            Debug.Log("Damage taken");
+            
             
         }
         if (collision.tag == "Player" && returnedToPlayer == true)

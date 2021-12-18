@@ -44,6 +44,7 @@ GameObject:
   - component: {fileID: 2754612196958527546}
   - component: {fileID: 2754612196958527550}
   - component: {fileID: 2754612196958527521}
+  - component: {fileID: 3870272000864971229}
   m_Layer: 9
   m_Name: Alien
   m_TagString: Enemy
@@ -207,3 +208,15 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!114 &3870272000864971229
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2754612196958527547}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 054e66c8a2ac7534eba75b89aac76dfd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
