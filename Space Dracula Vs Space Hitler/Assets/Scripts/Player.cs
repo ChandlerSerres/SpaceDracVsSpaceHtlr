@@ -12,7 +12,7 @@ public class Player : MonoBehaviour
     [Range(0, 10)]
     public float speed = 5;
     public int jumpNum = 1;
-    public float jumpV = 7f;
+    public float jumpV = 18f;
     public float stamina = 5;
     public Transform attackPoint;
     public float attackRange = 0.5f;
@@ -21,6 +21,7 @@ public class Player : MonoBehaviour
     public HealthBar healthBar;
     public GameObject knife;
     public Transform kinfeSpawn;
+    public GameObject bhb;
 
     public float dashDistance = 6f;
     bool isDashing;
@@ -33,14 +34,16 @@ public class Player : MonoBehaviour
     float nextThrowTime = 0f;
 
     private Rigidbody2D rigidBody;
-    private PolygonCollider2D collider;
+    private PolygonCollider2D bodyCol;
+
    
 
     private void Awake()
     {
         rigidBody = transform.GetComponent<Rigidbody2D>();
-        collider = transform.GetComponent<PolygonCollider2D>();
+        bodyCol = GetComponent<PolygonCollider2D>();
         transform.localScale = new Vector3(0.2f, 0.2f, 0.2f);
+
     }
 
 
@@ -115,6 +118,11 @@ public class Player : MonoBehaviour
         healthBar.SetHealth(healthBar.slider.value - damage);
     }
 
+    public void addHealth(float health)
+    {
+        healthBar.Heal(health);
+    }
+
     public void Hit()
     {
         Collider2D[] hitEnemies = Physics2D.OverlapCircleAll(attackPoint.position, attackRange, enemyLayers);
@@ -126,6 +134,10 @@ public class Player : MonoBehaviour
                 Debug.Log("Hit " + enemy.name);
                 enemy.GetComponent<EnemyHealth>().takeDamage(20);
             }
+            if(enemy.tag == "Boss")
+            {
+                bhb.GetComponent<BossHealthBar>().Damage(.10f);
+            }
 
         }
     }
@@ -134,15 +146,16 @@ public class Player : MonoBehaviour
     public void Movement()
     {
 
-            float XInput = Input.GetAxis("Horizontal");
-            horizontalInput = Input.GetAxis("Horizontal");
-            float verticalInput = Input.GetAxis("Vertical") * speed * Time.deltaTime;
-            if (Input.GetAxis("Horizontal") > 0) transform.localScale = new Vector3(0.2f, 0.2f, 0.2f);   
-            if (Input.GetAxis("Horizontal") < 0) transform.localScale = new Vector3(-0.2f, 0.2f, 0.2f);
-            if (!isDashing)
-            {
-                //transform.Translate(Vector2.right * horizontalInput * speed *Time.deltaTime);
-                rigidBody.velocity = new Vector2(horizontalInput * speed, rigidBody.velocity.y);
+
+        float XInput = Input.GetAxis("Horizontal");
+        horizontalInput = Input.GetAxis("Horizontal");
+        float verticalInput = Input.GetAxis("Vertical") * speed * Time.deltaTime;
+        if (Input.GetAxis("Horizontal") > 0) transform.localScale = new Vector3(0.2f, 0.2f, 0.2f);   
+        if (Input.GetAxis("Horizontal") < 0) transform.localScale = new Vector3(-0.2f, 0.2f, 0.2f);
+        if (!isDashing)
+        {
+            //transform.Translate(Vector2.right * horizontalInput * speed *Time.deltaTime);
+            rigidBody.velocity = new Vector2(horizontalInput * speed, rigidBody.velocity.y);
         }
 
 
@@ -195,7 +208,15 @@ public class Player : MonoBehaviour
     {
         isDashing = true;
         rigidBody.velocity = new Vector2(rigidBody.velocity.x, 0f);
-        rigidBody.AddForce(new Vector2(dashDistance * direction, 0f), ForceMode2D.Impulse);
+        if (!IsGrounded())
+        {
+            rigidBody.AddForce(new Vector2(dashDistance * direction, 0f), ForceMode2D.Impulse);
+        }
+        else
+        {
+            rigidBody.AddForce(new Vector2((dashDistance + 10) * direction, 0f), ForceMode2D.Impulse);
+        }
+        
         float gravity = rigidBody.gravityScale;
         rigidBody.gravityScale = 0;
         yield return new WaitForSeconds(0.2f);
@@ -206,8 +227,9 @@ public class Player : MonoBehaviour
 
     private bool IsGrounded()
     {
-        RaycastHit2D raycastHit = Physics2D.BoxCast(collider.bounds.center, collider.bounds.size , 0f, Vector2.down , 0.1f, platform);
-        return raycastHit.collider != null;
+        RaycastHit2D raycastHit = Physics2D.BoxCast(bodyCol.bounds.center, bodyCol.bounds.size , 0f, Vector2.down , 0.1f, platform);
+        RaycastHit2D raycastHitEnemies = Physics2D.BoxCast(bodyCol.bounds.center, bodyCol.bounds.size, 0f, Vector2.down, 0.1f, enemyLayers);
+        return raycastHit.collider != null || raycastHitEnemies.collider != null;
     }
 
     public void DecreaseStam()
@@ -228,6 +250,7 @@ public class Player : MonoBehaviour
             return;
         Gizmos.DrawWireSphere(attackPoint.position, attackRange);
     }
+
 
 
     private void OnCollisionEnter(Collision collision)

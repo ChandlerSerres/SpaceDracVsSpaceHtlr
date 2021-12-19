@@ -14,7 +14,6 @@ public class Enemy : MonoBehaviour
     private float waitTime;
     public float startWaitTime;
     private Rigidbody2D rigidBody;
-    private bool nearPlayer = false;
     public Transform attackPoint;
     public float attackRange = 0.5f;
     private Animator anim;
@@ -77,11 +76,10 @@ public class Enemy : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (!nearPlayer)
-        {
-            if (collision.transform == path[0]) { transform.eulerAngles = new Vector3(0, 180, 0); }
-            else { transform.eulerAngles = new Vector3(0, 0, 0); }
-        }
+   
+       if (collision.transform == path[0]) { transform.eulerAngles = new Vector3(0, 180, 0); }
+       else { transform.eulerAngles = new Vector3(0, 0, 0); }
+        
     }
 
 
@@ -94,40 +92,26 @@ public class Enemy : MonoBehaviour
 
     public void Movement()
     {
-        if (Vector2.Distance(transform.position, player.position) < 4f)
+
+
+        if (transform.position.x > path[0].transform.position.x && transform.position.x > path[1].transform.position.x) { transform.eulerAngles = new Vector3(0, 180, 0); }
+        if (transform.position.x < path[0].transform.position.x && transform.position.x < path[1].transform.position.x) { transform.eulerAngles = new Vector3(0, 0, 0); }
+        transform.position = Vector2.MoveTowards(transform.position, new Vector2(path[location].position.x, transform.position.y), speed * Time.deltaTime);
+
+        if (Vector2.Distance(transform.position, path[0].position) < 0.99f)
         {
-            nearPlayer = true;
-            transform.position = Vector2.MoveTowards(transform.position, new Vector2(player.position.x, transform.position.y), speed * Time.deltaTime);
-            if (transform.position.x > player.position.x) transform.eulerAngles = new Vector3(0, 180, 0);
-            else { transform.eulerAngles = new Vector3(0, 0, 0); }
-        }
-        else if (nearPlayer == true)
-        {
-            nearPlayer = false;
-        }
-
-        if (nearPlayer == false)
-        {
-
-            if (transform.position.x > path[0].transform.position.x && transform.position.x > path[1].transform.position.x) { transform.eulerAngles = new Vector3(0, 180, 0); }
-            if (transform.position.x < path[0].transform.position.x && transform.position.x < path[1].transform.position.x) { transform.eulerAngles = new Vector3(0, 0, 0); }
-            transform.position = Vector2.MoveTowards(transform.position, new Vector2(path[location].position.x, transform.position.y), speed * Time.deltaTime);
-
-            if (Vector2.Distance(transform.position, path[0].position) < 0.99f)
-            {
-                if (waitTime <= 0) { location = 1; waitTime = startWaitTime; }
-                else waitTime -= Time.deltaTime;
-
-
-            }
-            else if (Vector2.Distance(transform.position, path[1].position) < 0.99f)
-            {
-                if (waitTime <= 0) { location = 0; waitTime = startWaitTime; }
-                else waitTime -= Time.deltaTime;
-            }
-
+            if (waitTime <= 0) { location = 1; waitTime = startWaitTime; }
+            else waitTime -= Time.deltaTime;
 
 
         }
+        else if (Vector2.Distance(transform.position, path[1].position) < 0.99f)
+        {
+            if (waitTime <= 0) { location = 0; waitTime = startWaitTime; }
+            else waitTime -= Time.deltaTime;
+        }
+
+
+
     }
 }

@@ -8,7 +8,7 @@ public class Laser : MonoBehaviour
     Vector2 playerPos;
     Vector2 prevPos;
     Vector3 dir;
-    float speed = 95f;
+    float speed = 65f;
 
     // Start is called before the first frame update
     void Start()
@@ -33,6 +33,10 @@ public class Laser : MonoBehaviour
 
         if (collision.name == "Player" || collision.name == "Ground")
         {
+            if(collision.name == "Player")
+            {
+                collision.gameObject.GetComponent<Player>().takeDamage(.15f);
+            }
             Destroy(gameObject);
         }
     }

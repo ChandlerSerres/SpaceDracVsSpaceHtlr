@@ -4,6 +4,8 @@ using UnityEngine;
 using CodeMonkey.Utils;
 public class Knife : MonoBehaviour
 {
+    public GameObject bhb;
+
     Transform player;
     Vector3 pos;
     Vector3 dir;
@@ -12,6 +14,7 @@ public class Knife : MonoBehaviour
     private float speed = 100f;
     float timer = 0.7f;
     bool returnedToPlayer = false;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -20,6 +23,7 @@ public class Knife : MonoBehaviour
         dir.z = 0;
         player = GameObject.FindGameObjectWithTag("Player").GetComponent<Transform>();
         anim = GetComponent<Animator>();
+        bhb = GameObject.FindGameObjectWithTag("BossHealthBar");
     }
 
     // Update is called once per frame
@@ -54,6 +58,14 @@ public class Knife : MonoBehaviour
             Debug.Log("Damage taken");
             
             
+        }
+        if (collision.tag == "Boss")
+        {
+            returnedToPlayer = true;
+            bhb.GetComponent<BossHealthBar>().Damage(.15f);
+            Debug.Log("Damage taken");
+
+
         }
         if (collision.tag == "Player" && returnedToPlayer == true)
         {
